@@ -1,0 +1,71 @@
+name: Sync WEBUNIME Catalog
+
+on:
+  schedule:
+    # 00:00 WIB (UTC+7) = 17:00 UTC hari sebelumnya
+    - cron: "0 17 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-webunime-catalog
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Sync LK21 + Samehadaku
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout WEBUNIME
+        uses: actions/checkout@v4
+        with:
+          repository: gitgitmiko/WEBUNIME
+          ref: main
+          token: ${{ secrets.WEBUNIME_TOKEN }}
+          path: webunime
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: webunime/package-lock.json
+
+      - name: Install dependencies
+        working-directory: webunime
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        working-directory: webunime
+        run: npx playwright install --with-deps chromium
+
+      - name: Run catalog sync
+        working-directory: webunime
+        run: npm run sync:catalog
+        env:
+          CI: true
+
+      - name: Commit and push data changes
+        working-directory: webunime
+        run: |
+          git config user.name "webunime-scraper[bot]"
+          git config user.email "webunime-scraper[bot]@users.noreply.github.com"
+
+          git add public/data/*.json
+
+          if git diff --staged --quiet; then
+            echo "No catalog changes to commit."
+            exit 0
+          fi
+
+          git commit -m "$(cat <<'EOF'
+          chore(data): sync katalog LK21 + Samehadaku (GitHub Actions)
+
+          EOF
+          )"
+
+          git push origin HEAD:main
