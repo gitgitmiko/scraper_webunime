@@ -17,7 +17,7 @@ jobs:
   sync:
     name: Sync LK21 + Samehadaku
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
 
     steps:
       - name: Checkout WEBUNIME
@@ -48,6 +48,7 @@ jobs:
         run: npm run sync:catalog
         env:
           CI: true
+        # sync:catalog sudah termasuk enrich AniSkip (OP/ED) untuk episode baru
 
       - name: Commit and push data changes
         working-directory: webunime
@@ -63,7 +64,7 @@ jobs:
           fi
 
           git commit -m "$(cat <<'EOF'
-          chore(data): sync katalog LK21 + Samehadaku (GitHub Actions)
+          chore(data): sync katalog LK21 + Samehadaku + AniSkip (GitHub Actions)
 
           EOF
           )"

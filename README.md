@@ -68,8 +68,10 @@ git push -u origin main
 
 1. Checkout `gitgitmiko/WEBUNIME` (branch `main`) pakai `WEBUNIME_TOKEN`
 2. `npm ci` + install Playwright Chromium
-3. `npm run sync:catalog` (LK21 film/series/horror + Samehadaku)
+3. `npm run sync:catalog` (LK21 film/series/horror + Samehadaku + **enrich AniSkip OP/ED** untuk episode yang belum punya field `skip`)
 4. Commit & push perubahan di `public/data/*.json` (skip jika tidak ada perubahan)
+
+Anime/episode terbaru dari Samehadaku otomatis dapat field `skip` (bila tersedia di AniSkip). Jika AniSkip/AniList gagal, sync katalog tetap jalan; field `skip` bisa diisi nanti.
 
 ## Troubleshooting
 
