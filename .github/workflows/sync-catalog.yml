@@ -48,7 +48,10 @@ jobs:
         run: npm run sync:catalog
         env:
           CI: true
-        # sync:catalog sudah termasuk enrich AniSkip (OP/ED) untuk episode baru
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          # Batasi batch landscape per run agar job < 120 menit
+          LANDSCAPE_ENRICH_LIMIT: "80"
+        # sync:catalog: AniSkip + landscape (TMDB/situs) untuk item baru/tanpa field
 
       - name: Commit and push data changes
         working-directory: webunime
