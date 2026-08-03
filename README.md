@@ -1,6 +1,6 @@
 # Scraper WEBUNIME
 
-GitHub Actions yang menjalankan sync katalog **WEBUNIME** (LK21 + Samehadaku) sekali sehari, lalu push JSON ke repo [gitgitmiko/WEBUNIME](https://github.com/gitgitmiko/WEBUNIME).
+GitHub Actions yang menjalankan sync katalog **WEBUNIME** (LK21 + film Indonesia kconaz + Samehadaku) sekali sehari, lalu push JSON ke repo [gitgitmiko/WEBUNIME](https://github.com/gitgitmiko/WEBUNIME).
 
 Website dan app Android TV membaca data dari:
 

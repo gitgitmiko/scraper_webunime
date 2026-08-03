@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   sync:
-    name: Sync LK21 + Samehadaku
+    name: Sync LK21 + Indonesia + Samehadaku
     runs-on: ubuntu-latest
     timeout-minutes: 120
 
@@ -69,7 +69,7 @@ jobs:
           fi
 
           git commit -m "$(cat <<'EOF'
-          chore(data): sync katalog LK21 + Samehadaku + AniSkip (GitHub Actions)
+          chore(data): sync katalog LK21 + Indonesia + Samehadaku + AniSkip (GitHub Actions)
 
           EOF
           )"
