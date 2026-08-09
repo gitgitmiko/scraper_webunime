@@ -28,6 +28,27 @@ jobs:
           token: ${{ secrets.WEBUNIME_TOKEN }}
           path: webunime
 
+      - name: Mark sync running
+        working-directory: webunime
+        run: |
+          mkdir -p public/data
+          STARTED="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          cat > public/data/sync-status.json <<EOF
+          {
+            "state": "running",
+            "startedAt": "${STARTED}",
+            "finishedAt": null,
+            "runId": ${{ github.run_id }},
+            "message": "Scraping in progress"
+          }
+          EOF
+          git config user.name "webunime-scraper[bot]"
+          git config user.email "webunime-scraper[bot]@users.noreply.github.com"
+          git add public/data/sync-status.json
+          git diff --staged --quiet && exit 0
+          git commit -m "chore(data): mark catalog sync running"
+          git push origin HEAD:main
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -44,6 +65,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run catalog sync
+        id: sync
         working-directory: webunime
         run: npm run sync:catalog
         env:
@@ -55,21 +77,48 @@ jobs:
           ANISKIP_MAX_EPS: "6"
         # sync:catalog: AniSkip + landscape (TMDB/situs) untuk item baru/tanpa field
 
-      - name: Commit and push data changes
+      - name: Publish catalog and sync status
+        if: always()
         working-directory: webunime
+        env:
+          SYNC_OUTCOME: ${{ steps.sync.outcome }}
         run: |
           git config user.name "webunime-scraper[bot]"
           git config user.email "webunime-scraper[bot]@users.noreply.github.com"
 
-          git add public/data/*.json
+          if [ "$SYNC_OUTCOME" = "success" ]; then
+            STATE="done"
+            MSG="Catalog sync completed"
+          else
+            STATE="failed"
+            MSG="Catalog sync failed"
+          fi
 
+          STARTED="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          if [ -f public/data/sync-status.json ]; then
+            PREV="$(sed -n 's/.*"startedAt"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' public/data/sync-status.json | head -n1)"
+            if [ -n "$PREV" ]; then STARTED="$PREV"; fi
+          fi
+          FINISHED="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+          cat > public/data/sync-status.json <<EOF
+          {
+            "state": "${STATE}",
+            "startedAt": "${STARTED}",
+            "finishedAt": "${FINISHED}",
+            "runId": ${{ github.run_id }},
+            "message": "${MSG}"
+          }
+          EOF
+
+          git add public/data/*.json
           if git diff --staged --quiet; then
-            echo "No catalog changes to commit."
+            echo "No catalog/status changes to commit."
             exit 0
           fi
 
-          git commit -m "$(cat <<'EOF'
-          chore(data): sync katalog LK21 + Indonesia + Samehadaku + AniSkip (GitHub Actions)
+          git commit -m "$(cat <<EOF
+          chore(data): sync katalog LK21 + Indonesia + Samehadaku + AniSkip (${STATE})
 
           EOF
           )"
