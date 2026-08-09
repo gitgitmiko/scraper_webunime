@@ -117,8 +117,9 @@ jobs:
             exit 0
           fi
 
+<<<<<<< HEAD
           git commit -m "$(cat <<EOF
-          chore(data): sync katalog LK21 + Indonesia + Samehadaku + AniSkip (${STATE})
+          chore(data): sync katalog LK21 + Indonesia + Samehadaku + jadwal + AniSkip (${STATE})
 
           EOF
           )"

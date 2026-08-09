@@ -1,12 +1,17 @@
 # Scraper WEBUNIME
 
-GitHub Actions yang menjalankan sync katalog **WEBUNIME** (LK21 + film Indonesia kconaz + Samehadaku) sekali sehari, lalu push JSON ke repo [gitgitmiko/WEBUNIME](https://github.com/gitgitmiko/WEBUNIME).
+GitHub Actions yang menjalankan sync katalog **WEBUNIME** (LK21 + film Indonesia kconaz + Samehadaku + jadwal rilis) sekali sehari, lalu push JSON ke repo [gitgitmiko/WEBUNIME](https://github.com/gitgitmiko/WEBUNIME).
 
 Website dan app Android TV membaca data dari:
 
 `https://raw.githubusercontent.com/gitgitmiko/WEBUNIME/main/public/data/`
 
 Script scrape tetap di repo WEBUNIME (`npm run sync:catalog`). Repo ini hanya berisi workflow.
+
+Output Samehadaku tambahan:
+
+- `anime-latest.json`, `anime.json`, `anime-movies.json`
+- `anime-schedule.json` — jadwal rilis Senin–Minggu dari [samehadaku jadwal-rilis](https://v2.samehadaku.how/jadwal-rilis/) (uji manual: di WEBUNIME `npm run scrape:anime-schedule`)
 
 ## Yang perlu disiapkan (manual)
 
