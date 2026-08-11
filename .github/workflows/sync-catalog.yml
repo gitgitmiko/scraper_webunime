@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   sync:
-    name: Sync LK21 + Indonesia + Samehadaku
+    name: Sync LK21 + Indonesia + Samehadaku (TV + mobile)
     runs-on: ubuntu-latest
     timeout-minutes: 120
 
@@ -70,12 +70,7 @@ jobs:
         run: npm run sync:catalog
         env:
           CI: true
-          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
-          # Batch kecil agar free minutes GitHub Actions tidak habis
-          LANDSCAPE_ENRICH_LIMIT: "80"
-          ANISKIP_ENRICH_LIMIT: "15"
-          ANISKIP_MAX_EPS: "6"
-        # sync:catalog: AniSkip + landscape (TMDB/situs) untuk item baru/tanpa field
+        # sync:catalog: LK21 + Indonesia + Samehadaku (TV public/data + HP public/data/mobile)
 
       - name: Publish catalog and sync status
         if: always()
@@ -111,14 +106,14 @@ jobs:
           }
           EOF
 
-          git add public/data/*.json
+          git add public/data
           if git diff --staged --quiet; then
             echo "No catalog/status changes to commit."
             exit 0
           fi
 
           git commit -m "$(cat <<EOF
-          chore(data): sync katalog LK21 + Indonesia + Samehadaku + jadwal + AniSkip (${STATE})
+          chore(data): sync katalog LK21 + Indonesia + Samehadaku TV+mobile (${STATE})
 
           EOF
           )"

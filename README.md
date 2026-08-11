@@ -1,6 +1,6 @@
 # Scraper WEBUNIME
 
-GitHub Actions yang menjalankan sync katalog **WEBUNIME** (LK21 + film Indonesia kconaz + Samehadaku + jadwal rilis) sekali sehari, lalu push JSON ke repo [gitgitmiko/WEBUNIME](https://github.com/gitgitmiko/WEBUNIME).
+GitHub Actions yang menjalankan sync katalog **WEBUNIME** (LK21 + film Indonesia kconaz + Samehadaku + jadwal rilis) sekali sehari, lalu push JSON ke repo [gitgitmiko/WEBUNIME](https://github.com/gitgitmiko/WEBUNIME) — TV (`public/data/`) dan HP (`public/data/mobile/`).
 
 Website dan app Android TV membaca data dari:
 
@@ -73,10 +73,8 @@ git push -u origin main
 
 1. Checkout `gitgitmiko/WEBUNIME` (branch `main`) pakai `WEBUNIME_TOKEN`
 2. `npm ci` + install Playwright Chromium
-3. `npm run sync:catalog` (LK21 film/series/horror + Samehadaku + **enrich AniSkip OP/ED** untuk episode yang belum punya field `skip`)
-4. Commit & push perubahan di `public/data/*.json` (skip jika tidak ada perubahan)
-
-Anime/episode terbaru dari Samehadaku otomatis dapat field `skip` (bila tersedia di AniSkip). Jika AniSkip/AniList gagal, sync katalog tetap jalan; field `skip` bisa diisi nanti.
+3. `npm run sync:catalog` (LK21 film/series/horror + Samehadaku terbaru/movie/jadwal → TV + mobile)
+4. Commit & push perubahan di `public/data/` termasuk `public/data/mobile/` (skip jika tidak ada perubahan)
 
 ## Troubleshooting
 
