@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: sync-webunime-catalog
@@ -20,6 +20,11 @@ jobs:
     timeout-minutes: 120
 
     steps:
+      - name: Checkout scraper queue
+        uses: actions/checkout@v4
+        with:
+          path: scraper
+
       - name: Checkout WEBUNIME
         uses: actions/checkout@v4
         with:
@@ -64,6 +69,14 @@ jobs:
         working-directory: webunime
         run: npx playwright install --with-deps chromium
 
+      - name: Repair reported episodes
+        id: repair
+        working-directory: webunime
+        run: npm run repair:queue -- ../scraper/queue/repair-queue.json
+        env:
+          CI: true
+        continue-on-error: true
+
       - name: Run catalog sync
         id: sync
         working-directory: webunime
@@ -71,6 +84,17 @@ jobs:
         env:
           CI: true
         # sync:catalog: LK21 + Indonesia + Samehadaku (TV public/data + HP public/data/mobile)
+
+      - name: Save leftover repair queue
+        if: always()
+        working-directory: scraper
+        run: |
+          git config user.name "webunime-scraper[bot]"
+          git config user.email "webunime-scraper[bot]@users.noreply.github.com"
+          git add queue/repair-queue.json
+          git diff --staged --quiet && exit 0
+          git commit -m "chore(queue): sisa antrean report setelah sync malam"
+          git push origin HEAD:main
 
       - name: Publish catalog and sync status
         if: always()
