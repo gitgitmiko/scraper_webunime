@@ -35,10 +35,14 @@ Contoh: `https://github.com/gitgitmiko/scraper_webunime` (kosong / tanpa README 
 
 1. Buka repo scraper di GitHub
 2. **Settings → Secrets and variables → Actions → New repository secret**
-3. Name: `WEBUNIME_TOKEN`
-4. Value: PAT dari langkah 2 → **Add secret**
+3. Name: `WEBUNIME_TOKEN` — Value: PAT dari langkah 2
+4. Name: `CATALOG_SYNC_SECRET` — Value: **sama** dengan di server `/www/wwwroot/webunime/.env` (min 16 karakter)
+5. (Opsional) `TMDB_API_KEY`
 
-Tanpa secret ini, workflow gagal saat checkout/push ke WEBUNIME.
+Tanpa `WEBUNIME_TOKEN`, checkout/push ke WEBUNIME gagal.  
+Tanpa `CATALOG_SYNC_SECRET`, push ke MySQL API gagal (JSON di git tetap ter-commit).
+
+Website runtime membaca katalog dari `https://gitgitmiko.my.id/api/v1/...` (wajib login/token). JSON di git = backup.
 
 ### 4. Push project ini ke GitHub
 
