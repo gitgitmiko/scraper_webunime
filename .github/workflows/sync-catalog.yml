@@ -24,6 +24,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: scraper
+          fetch-depth: 0
 
       - name: Checkout WEBUNIME
         uses: actions/checkout@v4
@@ -32,6 +33,7 @@ jobs:
           ref: main
           token: ${{ secrets.WEBUNIME_TOKEN }}
           path: webunime
+          fetch-depth: 0
 
       - name: Mark sync running
         working-directory: webunime
@@ -52,6 +54,7 @@ jobs:
           git add public/data/sync-status.json
           git diff --staged --quiet && exit 0
           git commit -m "chore(data): mark catalog sync running"
+          git pull --rebase origin main
           git push origin HEAD:main
 
       - name: Setup Node.js
@@ -89,10 +92,23 @@ jobs:
         if: always()
         working-directory: scraper
         run: |
+          set -e
           git config user.name "webunime-scraper[bot]"
           git config user.email "webunime-scraper[bot]@users.noreply.github.com"
+
+          # Ambil tip remote dulu; file antrean hasil job ini tetap dipakai.
+          cp queue/repair-queue.json /tmp/repair-queue.leftover.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p queue
+          cp /tmp/repair-queue.leftover.json queue/repair-queue.json
+
           git add queue/repair-queue.json
-          git diff --staged --quiet && exit 0
+          if git diff --staged --quiet; then
+            echo "Tidak ada perubahan antrean."
+            exit 0
+          fi
+
           git commit -m "chore(queue): sisa antrean report setelah sync malam"
           git push origin HEAD:main
 
@@ -102,6 +118,7 @@ jobs:
         env:
           SYNC_OUTCOME: ${{ steps.sync.outcome }}
         run: |
+          set -e
           git config user.name "webunime-scraper[bot]"
           git config user.email "webunime-scraper[bot]@users.noreply.github.com"
 
@@ -130,6 +147,14 @@ jobs:
           }
           EOF
 
+          # Sinkron tip remote supaya push katalog tidak ditolak.
+          git fetch origin main
+          git rebase origin/main || {
+            echo "Rebase katalog gagal; abort dan coba merge."
+            git rebase --abort || true
+            git pull --no-rebase origin main
+          }
+
           git add public/data
           if git diff --staged --quiet; then
             echo "No catalog/status changes to commit."
@@ -142,10 +167,11 @@ jobs:
           EOF
           )"
 
+          git pull --rebase origin main
           git push origin HEAD:main
 
       - name: Push catalog to production API (MySQL)
-        if: success()
+        if: always() && steps.sync.outcome == 'success'
         working-directory: webunime
         env:
           CATALOG_API_BASE: https://gitgitmiko.my.id
