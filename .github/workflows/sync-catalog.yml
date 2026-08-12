@@ -143,3 +143,11 @@ jobs:
           )"
 
           git push origin HEAD:main
+
+      - name: Push catalog to production API (MySQL)
+        if: success()
+        working-directory: webunime
+        env:
+          CATALOG_API_BASE: https://gitgitmiko.my.id
+          CATALOG_SYNC_SECRET: ${{ secrets.CATALOG_SYNC_SECRET }}
+        run: npm run push:catalog-api
