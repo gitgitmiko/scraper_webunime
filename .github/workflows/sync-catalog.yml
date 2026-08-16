@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   sync:
-    name: Sync LK21 + Indonesia + Samehadaku (TV + mobile)
+    name: Sync LK21 + Indonesia + Samehadaku + Anoboy (TV + mobile)
     runs-on: ubuntu-latest
     timeout-minutes: 120
 
@@ -86,7 +86,7 @@ jobs:
         run: npm run sync:catalog
         env:
           CI: true
-        # sync:catalog: LK21 + Indonesia + Samehadaku (TV public/data + HP public/data/mobile)
+        # sync:catalog: LK21 + Indonesia + Samehadaku + Anoboy terbaru (TV + mobile)
 
       - name: Save leftover repair queue
         if: always()
@@ -162,7 +162,7 @@ jobs:
           fi
 
           git commit -m "$(cat <<EOF
-          chore(data): sync katalog LK21 + Indonesia + Samehadaku TV+mobile (${STATE})
+          chore(data): sync katalog LK21 + Indonesia + Samehadaku + Anoboy TV+mobile (${STATE})
 
           EOF
           )"
