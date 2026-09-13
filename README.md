@@ -2,7 +2,7 @@
 
 GitHub Actions yang menjalankan sync katalog **WEBUNIME** (LK21 + film Indonesia kconaz + Samehadaku + Anoboy terbaru + jadwal rilis) sekali sehari, lalu push JSON ke repo [gitgitmiko/WEBUNIME](https://github.com/gitgitmiko/WEBUNIME) — TV (`public/data/`) dan HP (`public/data/mobile/`).
 
-Website dan app Android TV membaca data dari:
+Website dan app Android TV membaca data dari JSON GitHub (bukan API/MySQL):
 
 `https://raw.githubusercontent.com/gitgitmiko/WEBUNIME/main/public/data/`
 
@@ -36,13 +36,11 @@ Contoh: `https://github.com/gitgitmiko/scraper_webunime` (kosong / tanpa README 
 1. Buka repo scraper di GitHub
 2. **Settings → Secrets and variables → Actions → New repository secret**
 3. Name: `WEBUNIME_TOKEN` — Value: PAT dari langkah 2
-4. Name: `CATALOG_SYNC_SECRET` — Value: **sama** dengan di server `/www/wwwroot/webunime/.env` (min 16 karakter)
-5. (Opsional) `TMDB_API_KEY`
+4. (Opsional) `TMDB_API_KEY`
 
-Tanpa `WEBUNIME_TOKEN`, checkout/push ke WEBUNIME gagal.  
-Tanpa `CATALOG_SYNC_SECRET`, push ke MySQL API gagal (JSON di git tetap ter-commit).
+Tanpa `WEBUNIME_TOKEN`, checkout/push ke WEBUNIME gagal.
 
-Website runtime membaca katalog dari `https://gitgitmiko.my.id/api/v1/...` (wajib login/token). JSON di git = backup.
+Secret `CATALOG_SYNC_SECRET` **tidak lagi dipakai** (push ke MySQL API sudah dihapus).
 
 ### 4. Push project ini ke GitHub
 
@@ -79,6 +77,8 @@ git push -u origin main
 2. `npm ci` + install Playwright Chromium
 3. `npm run sync:catalog` (LK21 film/series/horror + Samehadaku terbaru/movie/jadwal + Anoboy terbaru → TV + mobile)
 4. Commit & push perubahan di `public/data/` termasuk `public/data/mobile/` (skip jika tidak ada perubahan)
+
+Sumber kebenaran katalog = **JSON di git WEBUNIME**. Tidak ada push ke API/MySQL.
 
 ## Troubleshooting
 
