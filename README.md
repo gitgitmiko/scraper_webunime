@@ -85,7 +85,8 @@ Sumber kebenaran katalog = **JSON di git WEBUNIME**. Tidak ada push ke API/MySQL
 | Gejala | Kemungkinan | Tindakan |
 |--------|-------------|----------|
 | `WEBUNIME_TOKEN` / auth error | Secret belum diisi / PAT salah scope | Cek secret + Contents: Read and write di WEBUNIME |
-| Samehadaku timeout / Cloudflare | IP runner GitHub diblokir | Cek log Actions; LK21 biasanya tetap jalan. Sync anime lokal: di WEBUNIME jalankan `npm run sync:catalog` |
+| LK21 `Cloudflare timeout` / `HTTP 403` | IP runner GitHub diblokir Cloudflare | Normal di Actions. Sync LK21 di PC lokal: `cd WEBUNIME && npm run sync:catalog`, lalu commit/push `public/data/`. Atau self-hosted runner. |
+| Samehadaku timeout / Cloudflare | IP runner GitHub diblokir | Cek log Actions. Sync anime lokal: di WEBUNIME `npm run sync:catalog` |
 | Timeout job | Scrape lama | Default timeout 90 menit; jalankan ulang manual |
 | Tidak ada commit baru | Katalog sudah up-to-date | Normal — log akan bilang *No catalog changes* |
 
@@ -93,3 +94,4 @@ Sumber kebenaran katalog = **JSON di git WEBUNIME**. Tidak ada push ke API/MySQL
 
 - Jangan commit PAT / `.env` ke git.
 - Menit Actions dihitung dari akun GitHub Free (~2000 menit/bulan); 1× sehari biasanya cukup.
+- Film/series LK21 paling andal di-sync dari IP rumah; Actions tetap berguna untuk Indonesia/Samehadaku/Anoboy.
